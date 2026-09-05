@@ -21,9 +21,10 @@ public class VisitanteController {
         this.servicio = servicio;
     }
 
-    @PostMapping
-    public Visitante registrar(@RequestParam String nombre,
-                                @RequestParam int edad) {
+   @PostMapping
+    public Visitante registrar(@RequestBody Map<String, Object> body) {
+        String nombre = (String) body.get("nombre");
+        int edad = Integer.parseInt(body.get("edad").toString());
         return servicio.registrar(nombre, edad);
     }
 
