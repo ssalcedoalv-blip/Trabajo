@@ -4,6 +4,7 @@ import co.edu.unicordoba.registrovisitantes.modelo.Visitante;
 import co.edu.unicordoba.registrovisitantes.servicio.VisitanteService;
 import co.edu.unicordoba.registrovisitantes.util.TextoUtil;
 import org.springframework.web.bind.annotation.*;
+
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -49,15 +50,6 @@ public class VisitanteController {
         respuesta.put("edadMinima", Visitante.EDAD_MINIMA);
         return respuesta;
     }
-    @GetMapping("/instancia")
-public Map<String, Object> instancia() throws Exception {
-    Map<String, Object> r = new LinkedHashMap<>();
-    r.put("host", InetAddress.getLocalHost().getHostName());
-    r.put("arranqueJvm", ARRANQUE.toString());
-    r.put("creados", Visitante.getTotalCreados());
-    r.put("registrados", servicio.contarRegistrados());
-    return r;
-}
 
     @GetMapping("/normalizar")
     public Map<String, String> normalizar(@RequestParam String texto) {
@@ -67,7 +59,6 @@ public Map<String, Object> instancia() throws Exception {
     @PostMapping("/fantasma")
     public Map<String, Object> fantasma() {
         new Visitante("objeto fantasma", 30); // se crea... y se pierde (nadie lo referencia)
-
         Map<String, Object> respuesta = new LinkedHashMap<>();
         respuesta.put("registradosEnElServicio", servicio.contarRegistrados());
         respuesta.put("creadosEnLaClase", Visitante.getTotalCreados());
