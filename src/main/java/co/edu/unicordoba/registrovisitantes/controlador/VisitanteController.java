@@ -17,22 +17,28 @@ public class VisitanteController {
     private final VisitanteService servicio;
     private static final Instant ARRANQUE = Instant.now();
 
-    // Inyección POR CONSTRUCTOR: Spring nos entrega el bean ya creado.
-    // Nunca escribimos "new VisitanteService()" aquí: eso lo hace el contenedor.
     public VisitanteController(VisitanteService servicio) {
         this.servicio = servicio;
     }
 
-   @PostMapping
-    public Visitante registrar(@RequestBody Map<String, Object> body) {
-        String nombre = (String) body.get("nombre");
-        int edad = Integer.parseInt(body.get("edad").toString());
+    @PostMapping
+    public Visitante registrar(@RequestParam String nombre, @RequestParam int edad) {
         return servicio.registrar(nombre, edad);
     }
 
     @GetMapping
     public List<Visitante> listar() {
         return servicio.listar();
+    }
+
+    @GetMapping("/instancia")
+    public Map<String, Object> instancia() throws Exception {
+        Map<String, Object> r = new LinkedHashMap<>();
+        r.put("host", InetAddress.getLocalHost().getHostName());
+        r.put("arranqueJvm", ARRANQUE.toString());
+        r.put("creados", Visitante.getTotalCreados());
+        r.put("registrados", servicio.contarRegistrados());
+        return r;
     }
 
     @GetMapping("/conteos")
@@ -58,9 +64,6 @@ public Map<String, Object> instancia() throws Exception {
         return Map.of("normalizado", TextoUtil.normalizarNombre(texto));
     }
 
-    // ---------- Paso 6: el experimento del "objeto fantasma" ----------
-    // Se crea un Visitante con "new" pero NUNCA se guarda en la lista del servicio.
-    // Sirve para comprobar en vivo la diferencia entre estado de instancia y static.
     @PostMapping("/fantasma")
     public Map<String, Object> fantasma() {
         new Visitante("objeto fantasma", 30); // se crea... y se pierde (nadie lo referencia)
